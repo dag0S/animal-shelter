@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Animals {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  images      String[]
+  gender      Gender
+  temperament Temperament
+  status      Status
+  views       Int         @default(0)
+  dateOfBirth DateTime
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  type    Type?   @relation(fields: [typeId], references: [id])
+  typeId  Int?
+  breed   Breed?  @relation(fields: [breedId], references: [id])
+  breedId Int?
+  user    User?   @relation(fields: [userId], references: [id])
+  userId  Int?
+  color   Color[]
+}
+
+model Type {
+  id      Int       @id @default(autoincrement())
+  type    String
+  animals Animals[]
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model Breed {
+  id      Int       @id @default(autoincrement())
+  breed   String
+  animals Animals[]
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model Color {
+  id      Int       @id @default(autoincrement())
+  color   String
+  animals Animals[]
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model Phone {
+  id    Int    @id @default(autoincrement())
+  phone String
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String    @unique
+  password  String
+  role      Role
+  animals   Animals[]
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Status {
+  ADOPTED // Нашел хозяина
+  AVAILABLE_FOR_ADOPTION // В поиске хозяина
+  IN_FOSTER_CARE // На временной передержке
+  NOT_AVAILABLE // Временно недоступен
+  PENDING_ADOPTION // В процессе усыновления
+  UNDER_VETERINARY_CARE // На лечении
+  NEW_ARRIVAL // Недавно поступил
+  RESERVED // Зарезервирован
+  NO_STATUS // Без статуса
+  LOST_AND_FOUND // Найден (потерянный питомец)
+  TRANSFERRED // Передан в другой приют
+  DECEASED // Умер
+  RETIRED // На постоянной опеке в приюте
+  REUNITED //Воссоединен с владельцем
+}
+
+enum Temperament {
+  ACTIVE // Активный
+  CALM // Спокойный
+  COWARDLY // Трусливая
+}
